@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./database/databse";
-import { errorHandle } from "./middlewares/error.middleware";
+import { errorHandle } from "./middleware/error.middleware";
 import { StatusCodes } from "http-status-codes";
 import asyncHandler from "./utils/async-handler";
 import { UnauthorizedException } from "./utils/errors/unauthorized.error";
+import authRoutes from "./module/auth/auth.route";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(
     })
 );
 
+const basePath = process.env.BASE_PATH!;
 const port = parseInt(process.env.PORT!) || 3000;
 
 app.get(
@@ -31,6 +33,8 @@ app.get(
         res.status(StatusCodes.OK).json({ server: "Hello From Cors Server..." });
     })
 );
+
+app.use(`${basePath}/auth`, authRoutes);
 
 app.use(errorHandle);
 
