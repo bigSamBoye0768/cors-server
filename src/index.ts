@@ -8,6 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import asyncHandler from "./utils/async-handler";
 import { UnauthorizedException } from "./utils/errors/unauthorized.error";
 import authRoutes from "./module/auth/auth.route";
+import { NotFoundException } from "./utils/errors/not-found.error";
 
 dotenv.config();
 
@@ -35,6 +36,12 @@ app.get(
 );
 
 app.use(`${basePath}/auth`, authRoutes);
+
+app.use((req: Request, res: Response) => {
+    throw new NotFoundException("Route not found");
+    // Alternatively, you can send a 404 response directly:
+    // res.status(StatusCodes.NOT_FOUND).json({ message: "Route not found" });
+});
 
 app.use(errorHandle);
 

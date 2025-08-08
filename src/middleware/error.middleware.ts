@@ -37,11 +37,14 @@ export const errorHandle: ErrorRequestHandler = (err, req, res, next) => {
             message: err.message,
             errorCode: err.errorCode,
             details: err.details,
+            stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
         });
     }
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Internal Server Error",
         error: err.message || "Something went wrong",
+        stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+        status: ReasonPhrases.INTERNAL_SERVER_ERROR,
     });
 };
