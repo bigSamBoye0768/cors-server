@@ -1,4 +1,5 @@
 import mongoose, { Document } from "mongoose";
+import { hashValue, compareHash } from "../utils/helper";
 
 export interface EmailVerification {
     status: "unverified" | "verified" | "expired";
@@ -46,9 +47,9 @@ export interface User extends Document {
     lastName?: string | null;
     fullName?: string | null;
     phoneNumber?: PhoneNumber[] | null;
-    userAgent?: string | null;
+    // userAgent?: string | null;
     externalAccounts?: ExternalAccount[]; // Array of linked external accounts
-    ipAddress?: string | null;
+    // ipAddress?: string | null;
     isEmailVerified?: boolean;
     hasImage: boolean; // indicate if the user has an image
     profilePicture?: string; // Optional field for profile picture URL
@@ -116,8 +117,8 @@ const UserSchema = new mongoose.Schema<User>(
         profilePicture: { type: String, required: false, default: null }, // Optional field for profile picture URL
         bio: { type: String, required: false, default: null }, // Optional field
         externalAccounts: { type: [ExternalAccountSchema], required: false, default: [] }, // Array of linked external accounts
-        userAgent: { type: String, required: false, default: null },
-        ipAddress: { type: String, required: false, default: null },
+        // userAgent: { type: String, required: false, default: null },
+        // ipAddress: { type: String, required: false, default: null },
         lastLoginAt: { type: Date, required: false, default: null }, // Optional field to track last login time
         lastLoginIp: { type: String, required: false, default: null }, //
         isEmailVerified: { type: Boolean, default: false },
@@ -145,19 +146,19 @@ const UserSchema = new mongoose.Schema<User>(
     }
 );
 
-UserSchema.pre("save", function (next) {
+UserSchema.pre("save", async function (next) {
     if (this.isModified("password")) {
-        // Implement password hashing logic here
-        // For example, using bcrypt:
-        // this.password = await bcrypt.hash(this.password, 10);
+        this.password = await hashValue(this.password);
     }
     this.updatedAt = new Date();
     next();
 });
 
 UserSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
-    // Implement password comparison logic here
-    return this.password === password; // Placeholder logic, replace with actual hashing comparison
+    if (!this.password) {
+        throw new Error("Password not set");
+    }
+    return await compareHash(password, this.password);
 };
 
 UserSchema.methods.generateAuthToken = async function (): Promise<string> {
@@ -170,4 +171,6 @@ UserSchema.methods.generateAuthToken = async function (): Promise<string> {
 //     return primaryEmail ? primaryEmail.email : null;
 // };
 
-export const UserModel = mongoose.model<User>("User", UserSchema);
+const UserModel = mongoose.model<User>("User", UserSchema);
+export default UserModel;
+export type UserModelType = typeof UserModel;

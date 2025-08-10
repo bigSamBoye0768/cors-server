@@ -27,13 +27,9 @@ app.use(
 const basePath = process.env.BASE_PATH!;
 const port = parseInt(process.env.PORT!) || 3000;
 
-app.get(
-    "/",
-    asyncHandler((req: Request, res: Response) => {
-        throw new UnauthorizedException("Unauthorized access");
-        res.status(StatusCodes.OK).json({ server: "Hello From Cors Server..." });
-    })
-);
+app.get("/", (req: Request, res: Response) => {
+    res.status(StatusCodes.OK).json({ server: "Hello From Cors Server..." });
+});
 
 app.use(`${basePath}/auth`, authRoutes);
 

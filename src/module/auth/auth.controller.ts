@@ -12,19 +12,24 @@ export class AuthController {
             message: "Login successful",
         });
     });
+
     public register = asyncHandler(async (req: Request, res: Response, _next: NextFunction): Promise<any> => {
         const userAgent = req.headers["user-agent"];
         const ipAddress = req.ip;
 
+        console.log(req.body);
+
         const body = registerSchema.parse({
             ...req.body,
-            userAgent: userAgent || "Unknown User Agent",
-            ipAddress,
         });
 
-        this.authService.register(body);
+        console.log("register user body", body);
+
+        const data = await this.authService.register(body);
+
         return res.status(StatusCodes.CREATED).json({
             message: "User registered successfully",
+            data,
         });
     });
 }

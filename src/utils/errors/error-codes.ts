@@ -21,7 +21,9 @@ export enum ErrorCode {
 
     // Business Logic Errors (400-499)
     INVALID_OPERATION = 400,
-    PAYMENT_REQUIRED = 401,
+    AUTH_EMAIL_ALREADY_EXISTS = 401,
+    PAYMENT_REQUIRED = 402,
+    AUTH_USER_CREATION_FAILED = 403,
 
     // External Service Errors (500-599)
     EXTERNAL_SERVICE_FAILURE = 500,
@@ -45,4 +47,6 @@ export const ErrorCodeMessages: Record<ErrorCode, string> = {
     [ErrorCode.PAYMENT_REQUIRED]: "Payment required",
     [ErrorCode.EXTERNAL_SERVICE_FAILURE]: "External service failure",
     [ErrorCode.THIRD_PARTY_API_ERROR]: "Third-party API error",
+    [ErrorCode.AUTH_EMAIL_ALREADY_EXISTS]: "User with this email already exists",
+    [ErrorCode.AUTH_USER_CREATION_FAILED]: "User creation failed, please try again later",
 };

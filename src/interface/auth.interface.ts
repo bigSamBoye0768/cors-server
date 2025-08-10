@@ -1,12 +1,11 @@
 export interface RegisterDto {
-    username?: string;
+    username?: string | undefined;
     email: string;
     password: string;
     firstName?: string;
     lastName?: string;
     fullName?: string;
     phoneNumber?: string;
-    userAgent?: string;
     ipAddress?: string;
 }
 export interface LoginDto {

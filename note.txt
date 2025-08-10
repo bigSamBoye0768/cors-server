@@ -1,0 +1,32 @@
+Request verification step-by-step
+1. User sends:
+
+Access token (JWT) → usually in Authorization: Bearer ... header
+
+Session/refresh token → usually in an HTTP-only cookie
+
+2. Server does:
+
+Verify JWT signature & expiration
+
+Is it tampered with? ❌ reject
+
+Is it expired? ❌ reject
+
+Look up session in MongoDB
+
+Find the session by its sessionToken (or sessionId inside JWT payload)
+
+Is isActive true? ✅ proceed, ❌ reject
+
+Does it belong to the same user? ✅ proceed, ❌ reject
+
+3. Decision:
+
+If both JWT is valid and session is active → request allowed
+
+
+If JWT is valid but session is inactive/deleted → reject (force logout)
+
+
+

@@ -5,7 +5,7 @@ class AppError extends Error {
     public statusCode: StatusCodes;
     public isOperational: boolean;
     public stack?: string;
-    public errorCode?: ErrorCode | null;
+    public errorCode?: ErrorCode | undefined;
     public details?: any;
 
     constructor(
@@ -19,7 +19,7 @@ class AppError extends Error {
         this.name = "AppError";
         this.statusCode = statusCode;
         this.isOperational = isOperational;
-        this.errorCode = errorCode || null;
+        this.errorCode = errorCode || undefined;
         this.details = details;
         Error.captureStackTrace(this, this.constructor);
         Object.setPrototypeOf(this, AppError.prototype);
