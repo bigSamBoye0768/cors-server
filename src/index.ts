@@ -3,12 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./database/databse";
-import { errorHandle } from "./middleware/error.middleware";
 import { StatusCodes } from "http-status-codes";
-import asyncHandler from "./utils/async-handler";
-import { UnauthorizedException } from "./utils/errors/unauthorized.error";
-import authRoutes from "./module/auth/auth.route";
-import { NotFoundException } from "./utils/errors/not-found.error";
+import emailAuthRoutes from "./module/auth/local/email.route";
+import { requestId } from "./middleware/requestId";
+import { errorHandler } from "./middleware/errorHandler";
+import { notFound } from "./middleware/notFound";
 
 dotenv.config();
 
@@ -18,30 +17,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const allowedOrigins = ["http://localhost:3000", "https://frontend.app.com"];
 app.use(
-    cors({
-        origin: allowedOrigins,
-        credentials: true,
-    })
+	cors({
+		origin: allowedOrigins,
+		credentials: true,
+	})
 );
+
+app.use(requestId());
 
 const basePath = process.env.BASE_PATH!;
 const port = parseInt(process.env.PORT!) || 3000;
 
 app.get("/", (req: Request, res: Response) => {
-    res.status(StatusCodes.OK).json({ server: "Hello From Cors Server..." });
+	res.status(StatusCodes.OK).json({ server: "Hello From Cors Server..." });
 });
 
-app.use(`${basePath}/auth`, authRoutes);
+app.use(`${basePath}/auth`, emailAuthRoutes);
 
-app.use((req: Request, res: Response) => {
-    throw new NotFoundException("Route not found");
-    // Alternatively, you can send a 404 response directly:
-    // res.status(StatusCodes.NOT_FOUND).json({ message: "Route not found" });
-});
+app.use(notFound());
 
-app.use(errorHandle);
+app.use(
+	errorHandler({
+		env: process.env.NODE_ENV as any,
+		includeStack: true,
+		includeCauses: 2,
+		maxStackLines: 15,
+		allowDebugHeader: "x-vault-debug",
+		showDebugForIPs: ["127.0.0.1", "::1"],
+		// disableDebug: true                 // hard kill switch
+	})
+);
 
 app.listen(port, async () => {
-    console.log(`Server running on http://localhost:${port}`);
-    await connectDB();
+	console.log(`Server running on http://localhost:${port}`);
+	await connectDB();
 });

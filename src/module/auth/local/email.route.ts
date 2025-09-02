@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authController } from "./auth.module";
+import { authController } from "./email.module";
 
 const routes = Router();
 routes.post("/login", authController.login);

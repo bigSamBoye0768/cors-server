@@ -30,3 +30,36 @@ If JWT is valid but session is inactive/deleted → reject (force logout)
 
 
 
+
+
+
+
+1) what’s an RFC?
+
+Think of RFCs as official recipes for how the internet should do things.
+
+RFC = Request For Comments. It’s a public document that defines a standard.
+
+RFC 7807 is one such recipe. It says: “When an API returns an error, use this simple JSON format so everyone understands it.”
+
+The RFC-7807 JSON has these fields:
+
+type: a link (or string) that names the kind of error (e.g., your docs page).
+
+title: short name (“Invalid credentials”).
+
+status: HTTP number (401, 404, 422…).
+
+detail: a human explanation that’s safe to show.
+
+instance: which request it happened on (usually the URL path).
+
+You can add extra fields too (that’s allowed). We add things like:
+
+code: your stable app code like VAULT.AUTH.INVALID_CREDENTIALS
+
+request_id: an id to find the error in logs
+
+invalid_params: list of which fields failed validation
+
+retryable, docs, etc.
